@@ -94,13 +94,17 @@ class Model(nn.Module):
         self.feature_c = nn.Embedding(self.cid_size + 1, self.c_dim, padding_idx=0)
         self.feature_l = nn.Embedding(self.pid_size + 1, self.l_dim, padding_idx=0)
 
-        self.l_gat = GAT(nfeat=self.l_dim,
-                         nhid=self.nhid,
-                         dropout=self.dropout,
-                         nheads=self.num_heads,
-                         alpha=self.alpha,
-                         outdim=self.gat_outdim,
-                         device=torch.device(f"cuda:{self.gpu}"))
+        device = f"cuda:{params.gpu}" if torch.cuda.is_available() else "cpu"
+
+        self.l_gat = GAT(
+            nfeat=self.l_dim,
+            nhid=self.nhid,
+            dropout=self.dropout,
+            nheads=self.num_heads,
+            alpha=self.alpha,
+            outdim=self.gat_outdim,
+            device=torch.device(device)
+        )
 
         self.c_hidden_gat = GAT(nfeat=self.c_dim,
                                 nhid=self.nhid,
@@ -108,7 +112,7 @@ class Model(nn.Module):
                                 nheads=self.num_heads,
                                 alpha=self.alpha,
                                 outdim=self.c_dim,
-                                device=torch.device(f"cuda:{self.gpu}"))
+                                device=torch.device(device))
 
         self.c_gat = GAT(nfeat=self.c_dim,
                          nhid=self.nhid,
@@ -116,7 +120,7 @@ class Model(nn.Module):
                          nheads=self.num_heads,
                          alpha=self.alpha,
                          outdim=self.gat_outdim,
-                         device=torch.device(f"cuda:{self.gpu}"))
+                         device=torch.device(device))
 
 
         self.l_dropout = nn.Dropout(p=self.dropout)

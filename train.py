@@ -6,6 +6,7 @@ import random
 import numpy as np
 import pandas as pd
 import torch.nn.functional as F
+from nbconvert.utils.pandoc import pandoc
 from torch.optim.lr_scheduler import StepLR
 
 import torch
@@ -22,7 +23,7 @@ def settings(param=[]):
     parser.add_argument('--cat_contained', action='store_false', default=True, help="whether contain category")
     parser.add_argument('--out_filename', type=str, default='', help="output data filename")
     # train params
-    parser.add_argument('--gpu', type=str, default='1', help="GPU index to choose")
+    parser.add_argument('--gpu', type=str, default='0', help="GPU index to choose")
     parser.add_argument('--setting', type=int, default=0, help="0: full, 1: transductive, 2: inductive")
     parser.add_argument('--seed', type=int, default=0, help="random seed")
     parser.add_argument('--run_num', type=int, default=1, help="run number")
@@ -285,7 +286,8 @@ if __name__ == '__main__':
     # print('=' * 20, ' Program Start')
     params = settings()
     params.device = torch.device(f"cuda:{params.gpu}")
-    # print('Parameter is\n', params.__dict__)
+    params.device = f"cuda:{params.gpu}" if torch.cuda.is_available() else "cpu"
+    print('Parameter is\n', params.__dict__)
 
     # file name to store
     FILE_NAME = [params.path_out, f'{time.strftime("%Y%m%d")}_{params.data_name}_']
